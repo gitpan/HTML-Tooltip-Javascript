@@ -25,7 +25,7 @@ our @EXPORT = qw(
 	
 );
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 # Preloaded methods go here.
 
@@ -48,6 +48,7 @@ sub tooltip {
 
     $tip =~ s/\\/\\\\/g;
     $tip =~ s/['"]/\\'/g;
+    $tip =~ s/\n//g;
 
     my %opts = %{$self->{options}};
     foreach my $o (keys %$options) {
@@ -57,7 +58,7 @@ sub tooltip {
     my $text = ' onmouseover="';
     foreach my $o (keys %opts) {
         next if ($o eq 'default_tip');
-        next if (!$opts{$o});
+        next if (!defined $opts{$o});
         my $param = uc($o);
         my $val = $opts{$o};
 

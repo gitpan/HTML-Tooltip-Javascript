@@ -6,3 +6,7 @@ Revision history for Perl extension HTML::Tooltip::Javascript.
 
 0.02  Wed Jun 23 17:29:01 2004
         - Changed required version of perl from 5.8.3 to 5.6.0.
+
+0.02  Thu Sep 07 12:04:01 2004
+        - Modified to allow newlines in tooltip text
+        - Modified to check for definedness to allow 0 values in options
