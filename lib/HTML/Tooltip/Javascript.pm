@@ -1,6 +1,6 @@
 package HTML::Tooltip::Javascript;
 
-use 5.008003;
+use 5.006;
 use strict;
 use warnings;
 
@@ -25,7 +25,7 @@ our @EXPORT = qw(
 	
 );
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 # Preloaded methods go here.
 
@@ -353,7 +353,9 @@ See http://www.walterzorn.com/tooltip/tooltip_e.htm
 
 =head1 AUTHOR
 
-Unisolve Pty Ltd, E<lt>simon@unisolve.com.auE<gt>
+Becky Alcorn, Simon Taylor 
+Unisolve Pty Ltd
+E<lt>simon@unisolve.com.auE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
