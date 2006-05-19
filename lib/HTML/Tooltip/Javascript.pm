@@ -25,7 +25,7 @@ our @EXPORT = qw(
 	
 );
 
-our $VERSION = '0.03';
+our $VERSION = '1.00';
 
 # Preloaded methods go here.
 
@@ -48,7 +48,7 @@ sub tooltip {
 
     $tip =~ s/\\/\\\\/g;
     $tip =~ s/['"]/\\'/g;
-    $tip =~ s/\n//g;
+    $tip =~ s/[\n\r]//g;
 
     my %opts = %{$self->{options}};
     foreach my $o (keys %$options) {
@@ -56,9 +56,18 @@ sub tooltip {
     }
 
     my $text = ' onmouseover="';
+    my %can_be_zero = (
+        borderwidth => 1,
+        delay => 1,
+    );
     foreach my $o (keys %opts) {
         next if ($o eq 'default_tip');
-        next if (!defined $opts{$o});
+        next if ($o eq 'function');
+        if ($can_be_zero{$o}) {
+            next if (!defined $opts{$o});
+        } else {
+            next if (!$opts{$o});
+        }
         my $param = uc($o);
         my $val = $opts{$o};
 
@@ -70,7 +79,11 @@ sub tooltip {
         $text .= "this.T_$param=$val; ";
     }
 
-    $text .= "return escape('$tip');";
+    if ($opts{'function'}) {
+      $text .= "return escape($tip);";
+    } else {
+      $text .= "return escape('$tip');";
+    }
     $text .= '" ';
     return $text;
 }
@@ -96,7 +109,7 @@ HTML::Tooltip::Javascript - Provides a perl interface for easy use of Walter Zor
 
     my $tt = HTML::Tooltip::Javascript->new(
         javascript_dir => '/javascript/',
-        options => \%default_options,
+        options        => \%default_options,
     );
 
     # In HTML output ...
@@ -129,18 +142,19 @@ For those who don't like reading doco, here's a working example.  Make sure you'
     use strict;
     use warnings;
     use CGI;
-    use CGI::Carp qw(fatalsToBrowser);
+    use CGI::Carp qw(fatalsToBrowser); # Comment this out in production
     use HTML::Tooltip::Javascript;
 
     my $q = CGI->new();
+
     my $tt = HTML::Tooltip::Javascript->new(
         # Relative url path to where wz_tooltip.js is
         javascript_dir => '/javascript/',
-        options => {
-            bgcolor => '#EEEEEE',
+        options        => {
+            bgcolor     => '#EEEEEE',
             default_tip => 'Tip not defined',
-            delay => 0,
-            title => 'Tooltip',
+            delay       => 0,
+            title       => 'Tooltip',
         },
     );
 
@@ -153,8 +167,8 @@ For those who don't like reading doco, here's a working example.  Make sure you'
 
     print <<"EOT";
     <a href="http://www.walterzorn.com" $tip1>Walter Zorn</a><BR>
-    <a href="http://search.cpan.org" $tip2>CPAN</a><BR>
-    <a href="http://www.perlmeme.org" $tip3>Perlmeme</a><BR>
+    <a href="http://search.cpan.org"    $tip2>CPAN</a><BR>
+    <a href="http://www.perlmeme.org"   $tip3>Perlmeme</a><BR>
     EOT
 
     print $tt->at_end;
@@ -166,7 +180,7 @@ For those who don't like reading doco, here's a working example.  Make sure you'
 
     my $tt = HTML::Tooltip::Javascript->new(
         javascript_dir => '/javascript/',
-        options => \%default_options,
+        options        => \%default_options,
     );
 
 This method create a new HTML::Tooltip::Javascript object.  The parameters are optional.
@@ -199,6 +213,7 @@ The hash of options defines the options available in Walter Zorn's library, but 
     fontface         T_FONTFACE
     fontsize         T_FONTSIZE
     fontweight       T_FONTWEIGHT
+    function         (none)
     left             T_LEFT
     above            T_ABOVE
     offsetx          T_OFFSETX
@@ -215,6 +230,8 @@ The hash of options defines the options available in Walter Zorn's library, but 
 When defined in new, the options will be applied to each tooltip, unless the call to tooltip() specifically redefines that option.
 
 The default_tip is the text that will be used if no text is provided in the call to tooltip().
+
+The function option is used if the text you pass in as the tip is actually a call to a javascript function.  The javascript function must return text to output in the tooltip.
 
 =head2 tooltip
 
@@ -241,16 +258,15 @@ This method outputs the html to include Walter Zorn's script.  It must be output
 
 Walter Zorn's site states that the library supports the following browsers:
 
-Linux: Konqueror 3, Browsers with Gecko-Engine (Mozilla, Netscape 6, Galeon), Netscape 4 and 6, Opera 5 and 6.
+Linux: Konqueror 3, Browsers with Gecko-Engine (Mozilla/Firefox, Netscape 6, Galeon), Netscape 4 and 6, Opera 5 and 6.
 
 Windows: Netscape 4, Gecko Browsers, IE 4, 5.0, 5.5 and 6.0, Opera 5,6,7.
 
-Other systems:
-The matches to the above listed Linux/Windows browsers have full access.
+Other: The equivalent browsers on other Operating Systems should also work as expected.
 
 =head1 EXPLANATION OF OPTIONS
 
-These explanations are based on Walter Zorn's own documentation at http://www.walterzorn.com, except for 'default_tip' which is a perl only option.
+These explanations are based on Walter Zorn's own documentation at http://www.walterzorn.com, except for 'default_tip' and 'function' which are perl only options.
 
 =item above
 
@@ -299,6 +315,10 @@ Font size + unit.  Unit inevitably required.
 =item fontweight
 
 Font weight.  Available values: 'normal' or 'bold'.
+
+=item function
+
+Used to indicate that the text is actually a call to a javascript function.
 
 =item left
 
@@ -351,19 +371,24 @@ Nothing would be possible in the open source world without people like Walter Zo
 =head1 SEE ALSO
 
 See http://www.walterzorn.com/tooltip/tooltip_e.htm
+and http://www.perlmeme.org/tutorials/html_tooltip_javascript_talk.html
 
-=head1 AUTHOR
+=head1 LIMITATIONS
 
-Becky Alcorn, Simon Taylor 
+You cannot use Javascript to dynamically change the contents of the tooltip.  What you put in the HTML is what you get in the tooltip.  This is a feature of the underlying Javascript library and not the Perl module.
+
+=head1 AUTHORS
+
+Becky Alcorn, Simon Taylor.
 Unisolve Pty Ltd
 E<lt>simon@unisolve.com.auE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2004 by Unisolve Pty Ltd
+Copyright (C) 2004,2006 by Unisolve Pty Ltd
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.3 or,
+it under the same terms as Perl itself, either Perl version 5.6.0 or,
 at your option, any later version of Perl 5 you may have available.
 
 
