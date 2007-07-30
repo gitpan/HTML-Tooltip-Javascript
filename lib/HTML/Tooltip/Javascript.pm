@@ -25,7 +25,7 @@ our @EXPORT = qw(
 	
 );
 
-our $VERSION = '1.00';
+our $VERSION = '1.01';
 
 # Preloaded methods go here.
 
@@ -101,7 +101,7 @@ __END__
 
 =head1 NAME
 
-HTML::Tooltip::Javascript - Provides a perl interface for easy use of Walter Zorn's javascript tooltip library.  See http://www.walterzorn.com/tooltip/tooltip_e.htm
+HTML::Tooltip::Javascript - Provides a perl interface for easy use of Walter Zorn's javascript tooltip library (versions prior to 4.0).  See http://www.walterzorn.com/tooltip_old/tooltip_e.htm
 
 =head1 SYNOPSIS
 
@@ -128,7 +128,7 @@ HTML::Tooltip::Javascript - Provides a perl interface for easy use of Walter Zor
 =head1 DESCRIPTION
 
 
-This perl module provides an easy interface to Walter Zorn's GPLed Javascript tooltip library.  For further information on the Javascript library see http://www.walterzorn.com.
+This perl module provides an easy interface to Walter Zorn's GPLed Javascript tooltip library (versions prior to 4.0).  For further information on the Javascript library see http://www.walterzorn.com.
 
 On a web page, a tooltip is a box of text and/or images that pops up when the mouse hovers over an image, link, some text or an area of the page (div tag).  Walter Zorn's library allows great control over these boxes including changing colors, borders, fonts, images, delay (how fast the box pops up), alignment, shadows and more.
 
